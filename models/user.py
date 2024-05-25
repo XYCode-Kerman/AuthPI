@@ -1,4 +1,3 @@
-from datetime import date
 from typing import Literal, Optional
 
 from odmantic import Model
@@ -21,7 +20,6 @@ class UserPrivacyData(BaseModel):
     company: Optional[str]
     browser: Optional[str]
     device: Optional[str]
-    birthdate: Optional[date]
     email: Optional[str]
     phone: Optional[str]
     phoneCountryCode: Optional[str]
