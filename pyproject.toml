@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "authpi"
+version = "0.0.1-infdev.1"
+description = "开放的身份云API实现，参考了Authing"
+authors = ["XYCode Kerman <xycode-xyc@outlook.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<=3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
