@@ -10,15 +10,6 @@
   <a href="https://github.com/XYCode-Kerman/AuthPI/issues/new?assignees=&labels=enhancement&template=02_FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
   .<a href="https://github.com/XYCode-Kerman/AuthPI/discussions">Ask a Question</a>
 </div>
-
-<div align="center">
-<br />
-
-[![Project license](https://img.shields.io/github/license/XYCode-Kerman/AuthPI.svg?style=flat-square)](LICENSE)
-
-[![Pull Requests welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/XYCode-Kerman/AuthPI/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
-[![code with love by XYCode-Kerman](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-XYCode-Kerman-ff1414.svg?style=flat-square)](https://github.com/XYCode-Kerman)
-
 ---
 
 ## 关于
@@ -28,13 +19,23 @@ AuthPI是一款参照了Authing API设计的**开源的**用户管理系统。�
 关于这些概念，请参见[什么是用户池 | Authing 文档](https://docs.authing.cn/v2/concepts/user-pool.html)。
 
 > [!NOTE]
+> 
 > 您不能使用Authing SDK来调用AuthPI，它们是完全不同的产品。
+
+> [!Important]
+> 
+> 本项目名称的正确书写方法是AuthPI而**不是**AuthPi，读作/ɔθ paɪ/。AuthPI的正确简写是$A\pi$，纯ASCII的写法为ATT。
 
 ### 特点
 
 1. 使用FastAPI自动生成API文档而不是手动定义OpenAPI规范，保证一致性。
 2. 使用Mongodb而不是其他SQL数据库，使得本软件在将来可扩展性和可维护性更高。
-3. 参照已成熟的类似**闭源产品**Authing的设计来开发。
+3. 参照已成熟的类似**闭源产品**Authing的设计来开发，使得架构更加稳定清晰。
+
+### 为什么应该使用AuthPI？
+
+1. AuthPI原生支持部署到**Vercel**（WIP），降低个人开发者和小型企业的开发成本。
+2. AuthPI是**开源软件**。
 
 ## 开始使用
 
@@ -95,9 +96,17 @@ AuthPI是一款参照了Authing API设计的**开源的**用户管理系统。�
 
 ## 安全
 
-AuthPI 遵循良好的安全规范，但无法保证 100% 的安全性。AuthPI 按**"现状 "**提供，不提供任何**保证。使用风险自负。
+AuthPI 遵循良好的安全规范，但无法保证 100% 的安全性。AuthPI 按**"现状 "**提供，不提供任何**保证**。使用风险自负。
 
 如需了解更多信息和报告安全问题，请参阅我们的[安全文档](docs/SECURITY.md)。
+
+### 代码审计和测试
+
+AuthPI的测试覆盖率始终保持在$\ge 99\%$。而且，AuthPI会在每一个**次版本**和**补丁**发布时审计它的代码，确保没有安全问题。
+
+> [!Caution]
+>
+> 您应当始终使用最新版本的AuthPI，并始终关注其的安全警报。
 
 ## 许可证
 
