@@ -14,7 +14,6 @@ async def require_userpool(userpool_id: str) -> UserPool:
 
 
 def require_super_user(token: str = Depends(superuser_token_schema)):
-    print(token)
     if token != SUPER_USER_TOKEN:
         raise HTTPException(status_code=403, detail="禁止访问")
 
