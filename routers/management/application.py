@@ -6,7 +6,7 @@ from models import Application, UserPool
 from utils.auth.token import generate_access_token
 from utils.dependencies.management import require_super_user, require_userpool
 
-router = APIRouter(prefix='/{userpool_id}', tags=['应用', '管理'])
+router = APIRouter(prefix='/application/{userpool_id}', tags=['应用', '管理'])
 
 
 @router.get(
