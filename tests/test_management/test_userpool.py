@@ -1,7 +1,23 @@
-from fastapi.testclient import TestClient
+import contextlib
+
+import httpx
+from asgi_lifespan import LifespanManager
 from pytest import mark
 
 from config import SUPER_USER_TOKEN
+from main import create_app
+
+
+@contextlib.asynccontextmanager
+async def _client():
+    app = create_app()
+    async with LifespanManager(app) as manager:
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=manager.app),
+            base_url="http://app.invalid"
+        ) as client:
+            yield client
+
 
 TEST_USERPOOL = {
     "name": "string",
@@ -63,24 +79,24 @@ TEST_USERPOOL = {
 pytestmark = mark.asyncio
 
 
-async def test_get_userpools(client):
-    resp = client.get('/management/userpool/')
+async def test_get_userpools():
+    async with _client() as client:
+        resp = await client.get('http://app.invalid/management/userpool/')
 
-    assert resp.status_code == 403
-    assert resp.json() == {'detail': 'Not authenticated'}
+        assert resp.status_code == 403
+        assert resp.json() == {'detail': 'Not authenticated'}
 
-    resp = client.get('/management/userpool/', headers={
-        'su-token': SUPER_USER_TOKEN
-    })
+        resp = await client.get('http://app.invalid/management/userpool/', headers={
+            'su-token': SUPER_USER_TOKEN
+        })
 
-    assert resp.status_code == 200
-    assert type(resp.json()) == list
+        assert resp.status_code == 200
+        assert type(resp.json()) == list
 
 
 async def test_create_userpool():
-    from main import app
-    with TestClient(app) as client:
-        resp = client.post('/management/userpool/', headers={
+    async with _client() as client:
+        resp = await client.post('http://app.invalid/management/userpool/', headers={
             'su-token': SUPER_USER_TOKEN
         }, json=TEST_USERPOOL)
 
