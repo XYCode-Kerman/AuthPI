@@ -1,23 +1,9 @@
-import contextlib
 
-import httpx
-from asgi_lifespan import LifespanManager
+from bson import ObjectId
 from pytest import mark
 
 from config import SUPER_USER_TOKEN
-from main import create_app
-
-
-@contextlib.asynccontextmanager
-async def _client():
-    app = create_app()
-    async with LifespanManager(app) as manager:
-        async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=manager.app),
-            base_url="http://app.invalid"
-        ) as client:
-            yield client
-
+from utils.test import local_client
 
 TEST_USERPOOL = {
     "name": "string",
@@ -73,14 +59,14 @@ TEST_USERPOOL = {
             ]
         }
     ],
-    "id": "5f85f36d6dfecacc68428a46"
+    "id": ObjectId().__str__()
 }
 
 pytestmark = mark.asyncio
 
 
 async def test_get_userpools():
-    async with _client() as client:
+    async with local_client() as client:
         resp = await client.get('http://app.invalid/management/userpool/')
 
         assert resp.status_code == 403
@@ -94,11 +80,65 @@ async def test_get_userpools():
         assert type(resp.json()) == list
 
 
-async def test_create_userpool():
-    async with _client() as client:
+async def test_create_delete_put_get_detail_userpool():
+    """测试创建、删除、修改、获取用户池详情"""
+    async with local_client() as client:
+        # 新增
         resp = await client.post('http://app.invalid/management/userpool/', headers={
             'su-token': SUPER_USER_TOKEN
         }, json=TEST_USERPOOL)
 
         assert resp.status_code == 200
         assert resp.json()['name'] == TEST_USERPOOL['name']
+
+        # 获取详情
+        resp = await client.get(f'http://app.invalid/management/userpool/{TEST_USERPOOL['id']}', headers={
+            'su-token': SUPER_USER_TOKEN
+        })
+        assert resp.status_code == 200
+        assert resp.json()['name'] == TEST_USERPOOL['name']
+
+        # 修改
+        TEST_USERPOOL2 = TEST_USERPOOL.copy()
+        TEST_USERPOOL2['description'] = 'test'
+        resp = await client.put(f'http://app.invalid/management/userpool/{TEST_USERPOOL["id"]}', headers={
+            'su-token': SUPER_USER_TOKEN
+        }, json=TEST_USERPOOL2)
+        assert resp.status_code == 200
+
+        # 修改不存在用户池
+        TEST_USERPOOL2 = TEST_USERPOOL.copy()
+        TEST_USERPOOL2['description'] = 'test'
+        resp = await client.put(f'http://app.invalid/management/userpool/{ObjectId()}', headers={
+            'su-token': SUPER_USER_TOKEN
+        }, json=TEST_USERPOOL2)
+        assert resp.status_code == 404
+        assert resp.json() == {"detail": "用户池不存在"}
+
+        # 再次获取详情
+        resp = await client.get(f'http://app.invalid/management/userpool/{TEST_USERPOOL["id"]}', headers={
+            'su-token': SUPER_USER_TOKEN
+        })
+        assert resp.status_code == 200
+        assert resp.json()['description'] == TEST_USERPOOL2['description']
+
+        # 删除存在
+        resp = await client.delete(f'http://app.invalid/management/userpool/{TEST_USERPOOL['id']}', headers={
+            'su-token': SUPER_USER_TOKEN
+        })
+        assert resp.status_code == 200
+        assert resp.json() is True
+
+        # 删除不存在
+        resp = await client.delete(f'http://app.invalid/management/userpool/{ObjectId()}', headers={
+            'su-token': SUPER_USER_TOKEN
+        })
+        assert resp.status_code == 404
+        assert resp.json() == {"detail": "用户池不存在"}
+
+        # 获取不存在
+        resp = await client.get(f'http://app.invalid/management/userpool/{ObjectId()}', headers={
+            'su-token': SUPER_USER_TOKEN
+        })
+        assert resp.status_code == 404
+        assert resp.json() == {"detail": "用户池不存在"}

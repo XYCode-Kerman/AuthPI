@@ -28,6 +28,9 @@ async def get_userpool_detail(userpool_id: str, request: Request):
     engine = request.app.db_engine
     userpool = await engine.find_one(UserPool, UserPool.id == ObjectId(userpool_id))
 
+    if userpool is None:
+        raise HTTPException(status_code=404, detail="用户池不存在")
+
     return userpool
 
 
@@ -58,14 +61,14 @@ async def create_user_pool(userpool: UserPool, request: Request):
         }
     }
 )
-async def update_user_pool(userpool_id: str, userpool: UserPool, request: Request):
+async def update_user_pool(userpool_id: str, userpool_new: UserPool, request: Request):
     engine = request.app.db_engine
     userpool = await engine.find_one(UserPool, UserPool.id == ObjectId(userpool_id))
 
     if userpool is None:
         raise HTTPException(status_code=404, detail="用户池不存在")
 
-    userpool.model_update(userpool)
+    userpool.model_update(userpool_new, exclude=set(['id']))
     return await engine.save(userpool)
 
 
@@ -86,4 +89,6 @@ async def update_user_pool(userpool_id: str, userpool: UserPool, request: Reques
 )
 async def delete_user_pool(userpool_id: str, request: Request):
     engine = request.app.db_engine
-    return await engine.remove(UserPool, UserPool.id == ObjectId(userpool_id))
+    if not await engine.remove(UserPool, UserPool.id == ObjectId(userpool_id)):
+        raise HTTPException(status_code=404, detail="用户池不存在")
+    return True
