@@ -1,7 +1,6 @@
 from bson import ObjectId
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
-from database import engine
 from models import Application, UserPool
 from utils.auth.token import generate_access_token
 from utils.dependencies.management import require_super_user, require_userpool
@@ -42,7 +41,8 @@ async def get_application_access_token(application_id: str, userpool: UserPool =
     name='创建应用',
     response_model=Application
 )
-async def create_application(application: Application, userpool: UserPool = Depends(require_userpool)):
+async def create_application(application: Application, request: Request, userpool: UserPool = Depends(require_userpool)):
+    engine = request.app.db_engine
     userpool.applications.append(application)
 
     return (await engine.save(userpool)).applications[-1]
@@ -66,8 +66,10 @@ async def create_application(application: Application, userpool: UserPool = Depe
 async def update_application(
     application_id: str,
     updated_application: Application,
-    userpool: UserPool = Depends(require_userpool)
+    request: Request,
+    userpool: UserPool = Depends(require_userpool),
 ):
+    engine = request.app.db_engine
     application = next((x for x in userpool.applications if x.id == ObjectId(application_id)), None)
     if application is None:
         raise HTTPException(status_code=404, detail="应用不存在")
@@ -92,7 +94,8 @@ async def update_application(
         }
     }
 )
-async def delete_application(application_id: str, userpool: UserPool = Depends(require_userpool)):
+async def delete_application(application_id: str, request: Request, userpool: UserPool = Depends(require_userpool)):
+    engine = request.app.db_engine
     application = next((x for x in userpool.applications if x.id == ObjectId(application_id)), None)
     if application is None:
         raise HTTPException(status_code=404, detail="应用不存在")

@@ -1,7 +1,6 @@
 from bson import ObjectId
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
-from database import engine
 from models import UserPool
 from utils.dependencies.management import require_super_user
 
@@ -14,7 +13,8 @@ router = APIRouter(prefix='/userpool', tags=['用户池'], dependencies=[Depends
     description='获取用户池列表',
     response_model=list[UserPool]
 )
-async def get_userpool_list():
+async def get_userpool_list(request: Request):
+    engine = request.app.db_engine
     return await engine.find(UserPool)
 
 
@@ -24,7 +24,8 @@ async def get_userpool_list():
     description='获取用户池详情',
     response_model=UserPool
 )
-async def get_userpool_detail(userpool_id: str):
+async def get_userpool_detail(userpool_id: str, request: Request):
+    engine = request.app.db_engine
     userpool = await engine.find_one(UserPool, UserPool.id == ObjectId(userpool_id))
 
     return userpool
@@ -36,7 +37,8 @@ async def get_userpool_detail(userpool_id: str):
     description='创建用户池',
     response_model=UserPool
 )
-async def create_user_pool(userpool: UserPool):
+async def create_user_pool(userpool: UserPool, request: Request):
+    engine = request.app.db_engine
     return await engine.save(userpool)
 
 
@@ -56,7 +58,8 @@ async def create_user_pool(userpool: UserPool):
         }
     }
 )
-async def update_user_pool(userpool_id: str, userpool: UserPool):
+async def update_user_pool(userpool_id: str, userpool: UserPool, request: Request):
+    engine = request.app.db_engine
     userpool = await engine.find_one(UserPool, UserPool.id == ObjectId(userpool_id))
 
     if userpool is None:
@@ -81,5 +84,6 @@ async def update_user_pool(userpool_id: str, userpool: UserPool):
         }
     }
 )
-async def delete_user_pool(userpool_id: str):
+async def delete_user_pool(userpool_id: str, request: Request):
+    engine = request.app.db_engine
     return await engine.remove(UserPool, UserPool.id == ObjectId(userpool_id))
