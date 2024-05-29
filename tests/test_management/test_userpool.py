@@ -95,7 +95,7 @@ async def test_create_delete_put_get_detail_userpool():
         assert resp.json()['name'] == TEST_USERPOOL['name']
 
         # 获取详情
-        resp = await client.get(f'http://app.invalid/management/userpool/{TEST_USERPOOL['id']}', headers={
+        resp = await client.get(f'http://app.invalid/management/userpool/{TEST_USERPOOL["id"]}', headers={
             'su-token': SUPER_USER_TOKEN
         })
         assert resp.status_code == 200
@@ -126,7 +126,7 @@ async def test_create_delete_put_get_detail_userpool():
         assert resp.json()['description'] == TEST_USERPOOL2['description']
 
         # 删除存在
-        resp = await client.delete(f'http://app.invalid/management/userpool/{TEST_USERPOOL['id']}', headers={
+        resp = await client.delete(f'http://app.invalid/management/userpool/{TEST_USERPOOL["id"]}', headers={
             'su-token': SUPER_USER_TOKEN
         })
         assert resp.status_code == 200

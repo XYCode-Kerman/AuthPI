@@ -39,7 +39,7 @@ async def test_application(userpool: UserPool):
         assert [x for x in resp.json() if x['id'] == TEST_APPLICATION['id']].__len__() == 1
 
         # 获取密钥
-        resp = await client.get(f'/management/application/{userpool.id}/{TEST_APPLICATION['id']}/access-token', headers={
+        resp = await client.get(f'/management/application/{userpool.id}/{TEST_APPLICATION["id"]}/access-token', headers={
             'su-token': SUPER_USER_TOKEN
         })
         assert resp.status_code == 200
@@ -72,7 +72,7 @@ async def test_application(userpool: UserPool):
         assert [x for x in resp2.json() if x['name'] == 'test_114514'].__len__() == 1
 
         # 删除存在
-        resp = await client.delete(f'/management/application/{userpool.id}/{TEST_APPLICATION['id']}', headers={
+        resp = await client.delete(f'/management/application/{userpool.id}/{TEST_APPLICATION["id"]}', headers={
             'su-token': SUPER_USER_TOKEN
         })
         assert resp.status_code == 200
