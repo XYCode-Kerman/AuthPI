@@ -1,6 +1,5 @@
-
 <div align="center">
-  AuthPI
+  <img width="178px" src="./docs/images/AuthPI.svg" />
   <br />
   <a href="#about"><strong>Explore the screenshots »</strong></a>
   <br />
@@ -10,6 +9,7 @@
   <a href="https://github.com/XYCode-Kerman/AuthPI/issues/new?assignees=&labels=enhancement&template=02_FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
   .<a href="https://github.com/XYCode-Kerman/AuthPI/discussions">Ask a Question</a>
 </div>
+
 ---
 
 ## 关于
@@ -24,7 +24,7 @@ AuthPI是一款参照了Authing API设计的**开源的**用户管理系统。�
 
 > [!Important]
 > 
-> 本项目名称的正确书写方法是AuthPI而**不是**AuthPi，读作/ɔθ paɪ/。AuthPI的正确简写是$A\pi$，纯ASCII的写法为ATT。
+> 本项目名称的正确书写方法是AuthPI而**不是**AuthPi，读作/ɔθ paɪ/。AuthPI的正确简写是$A\pi$，纯ASCII的写法为AuthTT（简写为ATT）。
 
 ### 特点
 
