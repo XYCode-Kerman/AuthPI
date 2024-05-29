@@ -21,7 +21,18 @@ async def get_applications(userpool: UserPool = Depends(require_userpool)):
 @router.get(
     '/{application_id}/access-token',
     name='获取应用访问令牌',
-    response_model=str
+    response_model=str,
+    dependencies=[Depends(require_super_user)],
+    responses={
+        404: {
+            'description': '应用不存在',
+            'content': {
+                'application/json': {
+                    'example': {'detail': '应用不存在'}
+                }
+            }
+        }
+    }
 )
 async def get_application_access_token(application_id: str, userpool: UserPool = Depends(require_userpool)):
     applications = [
@@ -39,7 +50,8 @@ async def get_application_access_token(application_id: str, userpool: UserPool =
 @router.post(
     '/',
     name='创建应用',
-    response_model=Application
+    response_model=Application,
+    dependencies=[Depends(require_super_user)]
 )
 async def create_application(application: Application, request: Request, userpool: UserPool = Depends(require_userpool)):
     engine = request.app.db_engine
@@ -61,7 +73,8 @@ async def create_application(application: Application, request: Request, userpoo
                 }
             }
         }
-    }
+    },
+    dependencies=[Depends(require_super_user)]
 )
 async def update_application(
     application_id: str,
@@ -74,7 +87,7 @@ async def update_application(
     if application is None:
         raise HTTPException(status_code=404, detail="应用不存在")
 
-    application.model_update(updated_application)
+    application.model_update(updated_application, exclude=['id'])
 
     await engine.save(userpool)
     return application
@@ -91,8 +104,18 @@ async def update_application(
                     'example': {'detail': '应用不存在'}
                 }
             }
+        },
+        200: {
+            'description': '应用已删除',
+            'content': {
+                'application/json': {
+                    'example': {'detail': '应用已删除'}
+                }
+            }
         }
-    }
+    },
+    response_model=dict[str, str],
+    dependencies=[Depends(require_super_user)]
 )
 async def delete_application(application_id: str, request: Request, userpool: UserPool = Depends(require_userpool)):
     engine = request.app.db_engine
