@@ -1,62 +1,65 @@
 
+import random
+
 from bson import ObjectId
+from faker import Faker
 from pytest import mark
 
 from config import SUPER_USER_TOKEN
 from utils.test import local_client
 
+faker = Faker(locale='zh-CN')
+
 TEST_USERPOOL = {
-    "name": "string",
-    "description": "string",
+    "name": faker.word(),
+    "description": ''.join(faker.random_letters(length=128)),
     "users": [
         {
-            "username": "string",
-            "password": "string",
-            "name": "string",
-            "nickname": "string",
-            "externalId": "string",
+            "username": faker.user_name(),
+            "password": faker.password(),
+            "name": faker.name(),
+            "nickname": faker.name(),
+            "externalId": "test",
             "status": "Suspended",
-            "gender": "Male",
+            "gender": random.choice(['Male', 'Female']),
             "geography_datas": {
-                "country": "string",
-                "province": "string",
-                "city": "string",
-                "address": "string",
-                "streetAddress": "string",
-                "postalCode": "string"
+                "country": faker.country(),
+                "province": faker.province(),
+                "city": faker.city_name(),
+                "address": faker.address(),
+                "streetAddress": faker.address(),
+                "postalCode": faker.postcode()
             },
             "privacy_datas": {
-                "company": "string",
-                "browser": "string",
-                "device": "string",
-                "email": "string",
-                "phone": "string",
-                "phoneCountryCode": "string"
+                "company": faker.company(),
+                "browser": faker.user_agent(),
+                "device": random.choice(['Phone', 'PC', 'Laptop']),
+                "email": faker.email(),
+                "phone": faker.phone_number(),
+                "phoneCountryCode": str(faker.phonenumber_prefix())
             },
             "emailVerified": False,
             "phoneVerified": False,
-            "avatar": "string",
-            "id": "5f85f36d6dfecacc68428a46"
+            "avatar": faker.image_url(),
+            "id": ObjectId().__str__()
         }
     ],
     "applications": [
         {
-            "name": "string",
-            "slug": "string",
-            "app_id": "string",
-            "app_secret": "string",
+            "name": ''.join(faker.random_letters(length=32)),
+            "slug": ''.join(faker.random_letters(length=32)),
+            "app_id": ''.join(faker.random_letters(length=32)),
+            "app_secret": ''.join(faker.random_letters(length=32)),
             "auth_protocol": "OIDC",
-            "id": "5f85f36d6dfecacc68428a46"
+            "id": ObjectId().__str__(),
         }
     ],
     "resources": [
         {
-            "slug": "string",
-            "name": "string",
-            "description": "string",
-            "actions": [
-                "string"
-            ]
+            "slug": faker.slug(),
+            "name": faker.word(),
+            "description": ''.join([faker.word() for _ in range(10)]),
+            "actions": ['read', 'write']
         }
     ],
     "id": ObjectId().__str__()
