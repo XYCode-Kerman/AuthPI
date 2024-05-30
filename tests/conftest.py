@@ -94,7 +94,7 @@ async def userpool():
 @pytest_asyncio.fixture(scope='session')
 async def application_access_token(userpool: UserPool) -> str:
     async with local_client() as client:
-        resp = await client.get(f'/management/application/{userpool.id}/{TEST_USERPOOL['applications'][0]['id']}/access-token', headers={
+        resp = await client.get(f'/management/application/{userpool.id}/{TEST_USERPOOL["applications"][0]["id"]}/access-token', headers={
             'su-token': SUPER_USER_TOKEN
         })
 
