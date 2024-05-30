@@ -12,11 +12,11 @@ from models import Application, UserPool
 apikey_schema = APIKeyHeader(name='X-Application-Access-Token')
 
 
-def generate_access_token(userpool: UserPool, application: Application):
+def generate_access_token(userpool: UserPool, application: Application, expries: timedelta = timedelta(days=1)):
     return jwt.encode({
         'userpool': userpool.id.__str__(),
         'application': application.id.__str__(),
-        'exp': datetime.now() + timedelta(days=1)
+        'exp': int((datetime.now() + expries).timestamp())
     }, SECRET)
 
 
@@ -27,7 +27,7 @@ def decode_access_token(access_token: str = Depends(apikey_schema)) -> dict:
         raise HTTPException(status_code=401, detail="Access token 过期")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="无效的Access token")
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         raise HTTPException(status_code=401, detail=str(e))
 
 
