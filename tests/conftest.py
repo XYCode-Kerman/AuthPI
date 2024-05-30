@@ -89,3 +89,14 @@ async def userpool():
         assert resp.status_code == 200
         assert resp.json()['name'] == TEST_USERPOOL['name']
     return UserPool.model_validate(resp.json())
+
+
+@pytest_asyncio.fixture(scope='session')
+async def application_access_token(userpool: UserPool) -> str:
+    async with local_client() as client:
+        resp = await client.get(f'/management/application/{userpool.id}/{TEST_USERPOOL['applications'][0]['id']}/access-token', headers={
+            'su-token': SUPER_USER_TOKEN
+        })
+
+        assert resp.status_code == 200, resp.text
+    return resp.json()
