@@ -6,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from odmantic import AIOEngine
 
 from config import DATABASE_NAME, DATABASE_URL
-from routers import management
+from routers import auth, management
 
 client = AsyncIOMotorClient(DATABASE_URL)
 engine = AIOEngine(client=client, database=DATABASE_NAME)
@@ -43,6 +43,7 @@ def create_app() -> FastAPI:
     ]
 
     app.include_router(management.router)
+    app.include_router(auth.router)
 
     @app.get(
         '/ping',

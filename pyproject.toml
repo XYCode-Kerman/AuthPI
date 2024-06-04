@@ -16,6 +16,7 @@ motor = "^3.4.0"
 strawberry-graphql = {extras = ["fastapi"], version = "^0.230.0"}
 python-dotenv = "^1.0.1"
 pyjwt = "^2.8.0"
+pycryptodome = "^3.20.0"
 
 
 [tool.poetry.group.dev.dependencies]
