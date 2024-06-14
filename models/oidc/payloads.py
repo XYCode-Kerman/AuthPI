@@ -1,13 +1,17 @@
 import datetime
+import secrets
 from secrets import token_urlsafe
 from typing import Literal, Optional
 
 import jwt
 import odmantic
-from odmantic import AIOEngine, Model
+from fastapi import HTTPException
+from odmantic import AIOEngine, Model, Reference
 from pydantic import BaseModel, Field
 
 from config import ISSUER, SECRET
+from models.application import Application
+from models.user import User
 from utils.security.crypto import crypt_message_with_aes
 
 
@@ -59,3 +63,21 @@ class RefreshToken(BasicPayload, Model):
 
     def to_rtsecret(self):
         return crypt_message_with_aes(self.model_dump_json())
+
+
+class CSRFToken(BasicPayload):
+    pass
+
+    @staticmethod
+    def verify(token: str):
+        try:
+            jwt.decode(token, SECRET, algorithms=['HS256'])
+        except jwt.InvalidTokenError:
+            raise HTTPException(400, '无效的 CSRF Token')
+
+
+class AuthorizationCode(Model):
+    code: str = odmantic.Field(default_factory=lambda: secrets.token_hex(4), description='授权码')
+    scope: str = odmantic.Field(description='授权范围，以空格分隔。你填不存在的 scope 也行，只不过会被 AuthPI 的内置权限系统忽略而已。')
+    application: Application = Reference()
+    user: User = Reference()
